@@ -1,4 +1,2 @@
-version: '0.1'
-
 models:
   - 'example-model-name.gguf'
