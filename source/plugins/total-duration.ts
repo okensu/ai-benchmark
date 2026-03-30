@@ -1,6 +1,7 @@
 import type { Plugin } from '../core/models/plugin.ts';
 
 export class TotalDurationPlugin implements Plugin {
+  public name: string;
   public startedAt: Date | null;
   public startedAtTimestamp: number | null;
   public finishedAt: Date | null;
@@ -8,6 +9,7 @@ export class TotalDurationPlugin implements Plugin {
   public durationMs: number | null;
 
   constructor() {
+    this.name = 'total-duration';
     this.startedAt = null;
     this.startedAtTimestamp = null;
     this.finishedAt = null;
