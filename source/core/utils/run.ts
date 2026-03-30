@@ -6,5 +6,14 @@ export async function run(options: RunOptions): Promise<RunResult> {
     model: options.model
   });
 
+  result.setStartedAt(new Date());
+  result.setStartedAtTimestamp(performance.now());
+
+  // TODO: run benchmark here
+
+  result.setFinishedAtTimestamp(performance.now());
+  result.setFinishedAt(new Date());
+  result.calculateDuration();
+
   return result;
 }
