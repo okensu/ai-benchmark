@@ -1,2 +1,1 @@
-models:
-  - 'example-model-name.gguf'
+model: 'example-model-name.gguf'
