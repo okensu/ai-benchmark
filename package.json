@@ -2,5 +2,11 @@
   "name": "ai-benchmark",
   "version": "0.0.0",
   "description": "Benchmark for AI models.",
-  "author": "okensu"
+  "author": "okensu",
+  "scripts": {
+    "start": "tsx ./source/main.ts"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0"
+  }
 }
