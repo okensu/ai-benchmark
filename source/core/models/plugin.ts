@@ -1,5 +1,6 @@
+import type { EventEmitter } from 'node:events';
+
 export abstract class Plugin {
   public abstract name: string;
-  public abstract onRunStarted(): void;
-  public abstract onRunFinished(): void;
+  public abstract initialize(emitter: EventEmitter): void;
 }

@@ -1,5 +1,6 @@
-import type { RunResult } from './run-result.ts';
+import type { EventEmitter } from 'node:events';
+import type { Task } from './task.ts';
 
 export abstract class Workflow {
-  public abstract run(result: RunResult): void | Promise<void>;
+  public abstract run(tasks: Array<Task>, emitter: EventEmitter): void | Promise<void>;
 }

@@ -1,4 +1,4 @@
-import type { RunResult } from '../core/models/run-result.ts';
+import type { EventEmitter } from 'node:events';
 import type { Task } from '../core/models/task.ts';
 import type { Test } from '../core/models/test.ts';
 import type { Workflow } from '../core/models/workflow.ts';
@@ -20,18 +20,17 @@ export class DefaultWorkflow implements Workflow {
     this.fix = options.fix;
   }
 
-  // TODO: Pass tasks and event bus instead of result?
-  public async run(result: RunResult): Promise<void> {
-    for (const task of result.tasks) {
-      await this.runTask(task, result);
+  public async run(tasks: Array<Task>, emitter: EventEmitter): Promise<void> {
+    for (const task of tasks) {
+      await this.runTask(task, emitter);
     }
   }
 
   // TODO: Get rid of recursion
-  public async runTask(task: Task, result: RunResult): Promise<void> {
+  public async runTask(task: Task, emitter: EventEmitter): Promise<void> {
     if (task.subtasks.length > 0) {
       for (const subtask of task.subtasks) {
-        await this.runTask(subtask, result);
+        await this.runTask(subtask, emitter);
       }
     } else {
       await this.implement(task.instructions);

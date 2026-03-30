@@ -1,9 +1,12 @@
+import { EventEmitter } from 'node:events';
 import { RunResult } from '../models/run-result.ts';
 import type { RunOptions } from '../types/run-options.ts';
 import { defaultPlugins } from './default-plugins.ts';
 import { defaultTasks } from './default-tasks.ts';
 
 export async function run(options: RunOptions): Promise<RunResult> {
+  const emitter = new EventEmitter();
+
   const result = new RunResult({
     model: options.model,
     workflow: options.workflow,
@@ -12,14 +15,14 @@ export async function run(options: RunOptions): Promise<RunResult> {
   });
 
   for (const plugin of result.plugins) {
-    plugin.onRunStarted();
+    plugin.initialize(emitter);
   }
 
-  await result.workflow.run(result);
+  emitter.emit('run:started');
 
-  for (let i = result.plugins.length - 1; i >= 0; i--) {
-    result.plugins[i].onRunFinished();
-  }
+  await result.workflow.run(result.tasks, emitter);
+
+  emitter.emit('run:finished');
 
   return result;
 }

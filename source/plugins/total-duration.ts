@@ -1,3 +1,4 @@
+import type { EventEmitter } from 'node:events';
 import type { Plugin } from '../core/models/plugin.ts';
 
 export class TotalDurationPlugin implements Plugin {
@@ -17,14 +18,16 @@ export class TotalDurationPlugin implements Plugin {
     this.durationMs = null;
   }
 
-  public onRunStarted(): void {
-    this.startedAt = new Date();
-    this.startedAtTimestamp = performance.now();
-  }
+  public initialize(emitter: EventEmitter): void {
+    emitter.on('run:started', () => {
+      this.startedAt = new Date();
+      this.startedAtTimestamp = performance.now();
+    });
 
-  public onRunFinished(): void {
-    this.finishedAtTimestamp = performance.now();
-    this.finishedAt = new Date();
-    this.durationMs = this.finishedAtTimestamp - (this.startedAtTimestamp as number);
+    emitter.on('run:finished', () => {
+      this.finishedAtTimestamp = performance.now();
+      this.finishedAt = new Date();
+      this.durationMs = this.finishedAtTimestamp - (this.startedAtTimestamp as number);
+    });
   }
 }
