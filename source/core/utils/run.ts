@@ -5,7 +5,7 @@ import type { RunOptions } from '../types/run-options.ts';
 export async function run(options: RunOptions): Promise<RunResult> {
   const result = new RunResult({
     model: options.model,
-    plugins: options.plugins || defaultPlugins()
+    plugins: options.plugins ?? defaultPlugins()
   });
 
   for (const plugin of result.plugins) {
