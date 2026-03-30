@@ -6,6 +6,7 @@ import { defaultTasks } from './default-tasks.ts';
 export async function run(options: RunOptions): Promise<RunResult> {
   const result = new RunResult({
     model: options.model,
+    workflow: options.workflow,
     plugins: options.plugins ?? defaultPlugins(),
     tasks: options.tasks ?? defaultTasks()
   });
@@ -14,7 +15,7 @@ export async function run(options: RunOptions): Promise<RunResult> {
     plugin.onRunStarted();
   }
 
-  // TODO: run benchmark here
+  await result.workflow.run(result);
 
   for (let i = result.plugins.length - 1; i >= 0; i--) {
     result.plugins[i].onRunFinished();
