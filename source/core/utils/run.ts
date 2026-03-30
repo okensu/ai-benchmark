@@ -1,19 +1,22 @@
+import { defaultPlugins } from '../constants/default-plugins.ts';
 import { RunResult } from '../models/run-result.ts';
-import { RunOptions } from '../types/run-options.ts';
+import type { RunOptions } from '../types/run-options.ts';
 
 export async function run(options: RunOptions): Promise<RunResult> {
   const result = new RunResult({
-    model: options.model
+    model: options.model,
+    plugins: options.plugins || defaultPlugins
   });
 
-  result.setStartedAt(new Date());
-  result.setStartedAtTimestamp(performance.now());
+  for (const plugin of result.plugins) {
+    plugin.onRunStarted();
+  }
 
   // TODO: run benchmark here
 
-  result.setFinishedAtTimestamp(performance.now());
-  result.setFinishedAt(new Date());
-  result.calculateDuration();
+  for (let i = result.plugins.length - 1; i >= 0; i--) {
+    result.plugins[i].onRunFinished();
+  }
 
   return result;
 }
