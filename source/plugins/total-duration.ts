@@ -1,6 +1,6 @@
 import type { Plugin } from '../core/models/plugin.ts';
 
-export class DurationPlugin implements Plugin {
+export class TotalDurationPlugin implements Plugin {
   public startedAt: Date | null;
   public startedAtTimestamp: number | null;
   public finishedAt: Date | null;

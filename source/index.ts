@@ -4,4 +4,4 @@ export type { RunOptions } from './core/types/run-options.ts';
 export { defaultPlugins } from './core/utils/default-plugins.ts';
 export { run } from './core/utils/run.ts';
 
-export { DurationPlugin } from './plugins/duration.ts';
+export { TotalDurationPlugin } from './plugins/total-duration.ts';
