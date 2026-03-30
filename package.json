@@ -6,6 +6,9 @@
   "scripts": {
     "start": "tsx ./source/main.ts"
   },
+  "dependencies": {
+    "yaml": "^2.8.3"
+  },
   "devDependencies": {
     "tsx": "^4.21.0"
   }
