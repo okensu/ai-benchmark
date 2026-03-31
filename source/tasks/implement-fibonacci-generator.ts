@@ -15,34 +15,7 @@ export class ImplementFibonacciGeneratorTask implements Task {
     this.instructions = 'Create fibonacci.ts exporting fib(n)';
     this.subtasks = [];
     this.tests = [
-      // TODO: Split this test into multiple tests, each checking their own value
-      new DeterministicTest({
-        name: 'fib(n) should return correct values',
-        run: async (importModule): Promise<TestResult> => {
-          try {
-            const expectedValues = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55];
-            const { fib } = await importModule('./fibonacci.ts');
-
-            for (let i = 0; i < expectedValues.length; i++) {
-              if (fib(i) !== expectedValues[i]) {
-                return new TestResult({
-                  status: 'failed',
-                  reason: 'fib(n) should return correct values'
-                });
-              }
-            }
-
-            return new TestResult({
-              status: 'passed'
-            });
-          } catch (error) {
-            return new TestResult({
-              status: 'failed',
-              reason: 'Error was thrown during test execution'
-            });
-          }
-        }
-      }),
+      ...this.shouldReturnCorrectValuesTests(),
       new AgenticTest({
         name: 'should be self-documented (zero comments)',
         instructions: 'Validate that result is self-documented and doesn\'t have any comments'
@@ -76,5 +49,36 @@ export class ImplementFibonacciGeneratorTask implements Task {
         instructions: 'Validate that result uses single quotes for strings'
       })
     ];
+  }
+
+  private shouldReturnCorrectValuesTests(): Array<DeterministicTest> {
+    const expectedValues = [0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55];
+
+    return expectedValues.map((expectedValue, n) => new DeterministicTest({
+      name: `fib(${n}) should return ${expectedValue}`,
+      run: async (importModule): Promise<TestResult> => {
+        // TODO: move try-catch outside the test
+        try {
+          const { fib } = await importModule('./fibonacci.ts');
+          const returnedValue = fib(n);
+
+          if (returnedValue === expectedValue) {
+            return new TestResult({
+              status: 'passed'
+            });
+          } else {
+            return new TestResult({
+              status: 'failed',
+              reason: `fib(${n}) returned ${returnedValue}`
+            });
+          }
+        } catch (error) {
+          return new TestResult({
+            status: 'failed',
+            reason: 'Error was thrown during test execution'
+          });
+        }
+      }
+    }));
   }
 }
