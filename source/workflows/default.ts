@@ -1,6 +1,5 @@
 import type { EventEmitter } from 'node:events';
 import { resolve } from 'node:path';
-import chalk from 'chalk';
 import { AgenticTest } from '../core/models/agentic-test.ts';
 import { DeterministicTest } from '../core/models/deterministic-test.ts';
 import type { Task } from '../core/models/task.ts';
@@ -38,20 +37,32 @@ export class DefaultWorkflow implements Workflow {
         await this.runTask(subtask, emitter);
       }
     } else {
-      await this.runImplementationStage(task);
-      await this.runTestingStage(task);
+      emitter.emit('task:started', { task });
+
+      await this.runImplementationStage(task, emitter);
+      await this.runTestingStage(task, emitter);
+
+      emitter.emit('task:finished', { task });
     }
   }
 
-  private async runImplementationStage(task: Task): Promise<void> {
+  private async runImplementationStage(task: Task, emitter: EventEmitter): Promise<void> {
+    emitter.emit('task:implementation:started');
+
     // TODO: Move artifacts path somewhere else
     await this.implement(task.instructions, './example/__artifacts__');
+
+    emitter.emit('task:implementation:finished');
   }
 
-  private async runTestingStage(task: Task): Promise<void> {
+  private async runTestingStage(task: Task, emitter: EventEmitter): Promise<void> {
+    emitter.emit('task:testing:started');
+
     let failedTests: Array<Test> = [];
 
     while (true) {
+      emitter.emit('task:testing:running-tests');
+
       const reorderedTests = this.reorderTests({
         tests: task.tests,
         startWithTests: failedTests
@@ -63,7 +74,9 @@ export class DefaultWorkflow implements Workflow {
         resolveAfterFirstFailedTest: true,
 
         // TODO: Move artifacts path somewhere else
-        artifactsPath: './example/__artifacts__'
+        artifactsPath: './example/__artifacts__',
+
+        emitter
       });
 
       if (failedTests.length === 0) {
@@ -72,8 +85,12 @@ export class DefaultWorkflow implements Workflow {
 
       const fixInstructions = `Previously, you've implemented the following task:\n\n====================\n${task.instructions}\n====================\n\nOne of the tests failed: ${failedTests.map((test) => test.name).join(', ')}\n\nPlease fix it by editing the existing solution`;
 
+      emitter.emit('task:testing:fixing');
+
       await this.fix(fixInstructions, './example/__artifacts__');
     }
+
+    emitter.emit('task:testing:finished');
   }
 
   private reorderTests({
@@ -107,25 +124,29 @@ export class DefaultWorkflow implements Workflow {
     task,
     tests,
     resolveAfterFirstFailedTest,
-    artifactsPath
+    artifactsPath,
+    emitter
   }: {
     task: Task,
     tests: Array<Test>,
     resolveAfterFirstFailedTest: boolean,
-    artifactsPath: string
+    artifactsPath: string,
+    emitter: EventEmitter
   }): Promise<Array<Test>> {
     const failedTests: Array<Test> = [];
 
     for (const test of tests) {
+      emitter.emit('test:started', { test });
+
       const testResult = await this.runTest(task, test, artifactsPath);
 
       switch (testResult.status) {
         case 'passed':
-          console.log(chalk.bgGreen.black(`  ${test.name} `));
+          emitter.emit('test:passed', { test });
           break;
 
         case 'failed':
-          console.log(chalk.bgRed.black(`  ${test.name} `));
+          emitter.emit('test:failed', { test });
 
           failedTests.push(test);
 
