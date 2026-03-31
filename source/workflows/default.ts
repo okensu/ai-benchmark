@@ -28,7 +28,7 @@ export class DefaultWorkflow implements Workflow {
   }
 
   // TODO: Get rid of recursion
-  public async runTask(task: Task, emitter: EventEmitter): Promise<void> {
+  private async runTask(task: Task, emitter: EventEmitter): Promise<void> {
     if (task.subtasks.length > 0) {
       for (const subtask of task.subtasks) {
         await this.runTask(subtask, emitter);
