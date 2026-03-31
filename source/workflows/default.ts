@@ -1,5 +1,6 @@
 import type { EventEmitter } from 'node:events';
 import { resolve } from 'node:path';
+import chalk from 'chalk';
 import { AgenticTest } from '../core/models/agentic-test.ts';
 import { DeterministicTest } from '../core/models/deterministic-test.ts';
 import type { Task } from '../core/models/task.ts';
@@ -118,14 +119,24 @@ export class DefaultWorkflow implements Workflow {
     for (const test of tests) {
       const testResult = await this.runTest(task, test, artifactsPath);
 
-      if (testResult.status === 'failed') {
-        console.log('Test failed', test);
+      switch (testResult.status) {
+        case 'passed':
+          console.log(chalk.bgGreen.black(`  ${test.name} `));
+          break;
 
-        failedTests.push(test);
+        case 'failed':
+          console.log(chalk.bgRed.black(`  ${test.name} `));
 
-        if (resolveAfterFirstFailedTest) {
-          return failedTests;
-        }
+          failedTests.push(test);
+
+          if (resolveAfterFirstFailedTest) {
+            return failedTests;
+          }
+
+          break;
+
+        default:
+          throw new Error(`Received unexpected test result status – ${testResult.status}!`);
       }
     }
 
