@@ -92,11 +92,9 @@ async function main(): Promise<void> {
           }
         });
 
-        const result = await runAgent(developer, instructions, {
+        await runAgent(developer, instructions, {
           maxTurns: 100
         });
-
-        console.log(result);
       },
       test: async (instructions: string, artifactsPath: string): Promise<TestResult> => {
         let testResult: TestResult | null = null;
@@ -141,11 +139,9 @@ async function main(): Promise<void> {
           }
         });
 
-        const result = await runAgent(tester, instructions, {
+        await runAgent(tester, instructions, {
           maxTurns: 100
         });
-
-        console.log(result);
 
         return (testResult !== null)
           ? testResult
@@ -167,11 +163,9 @@ async function main(): Promise<void> {
           }
         });
 
-        const result = await runAgent(developer, instructions, {
+        await runAgent(developer, instructions, {
           maxTurns: 100
         });
-
-        console.log(result);
       }
     })
   });
