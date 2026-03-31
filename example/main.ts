@@ -78,7 +78,7 @@ async function main(): Promise<void> {
   // -----------------------
   // Run benchmark
   // -----------------------
-  const result = await run({
+  await run({
     model: 'Qwen3.5-35B-A3B-Uncensored-HauhauCS-Aggressive-Q4_K_M.gguf',
     workflow: defaultWorkflow({
       implement: async (instructions: string, artifactsPath: string): Promise<void> => {
@@ -169,8 +169,6 @@ async function main(): Promise<void> {
       }
     })
   });
-
-  console.log(result);
   // -----------------------
 }
 
