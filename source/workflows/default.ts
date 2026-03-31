@@ -2,16 +2,17 @@ import type { EventEmitter } from 'node:events';
 import type { Task } from '../core/models/task.ts';
 import type { Test } from '../core/models/test.ts';
 import type { Workflow } from '../core/models/workflow.ts';
+import type { TestResult } from '../core/models/test-result.ts';
 
 export type DefaultWorkflowOptions = {
   implement: (instructions: string) => void | Promise<void>;
-  test: (test: Test) => void | Promise<void>;
+  test: (test: Test) => TestResult | Promise<TestResult>;
   fix: (instructions: string) => void | Promise<void>;
 };
 
 export class DefaultWorkflow implements Workflow {
   private implement: (instructions: string) => void | Promise<void>;
-  private test: (test: Test) => void | Promise<void>;
+  private test: (test: Test) => TestResult | Promise<TestResult>;
   private fix: (instructions: string) => void | Promise<void>;
 
   constructor(options: DefaultWorkflowOptions) {

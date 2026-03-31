@@ -2,6 +2,7 @@ export type { Plugin } from './core/models/plugin.ts';
 export type { RunResult } from './core/models/run-result.ts';
 export type { Task } from './core/models/task.ts';
 export type { Test } from './core/models/test.ts';
+export { TestResult } from './core/models/test-result.ts';
 export type { Workflow } from './core/models/workflow.ts';
 export type { DefaultWorkflowOptions } from './core/types/default-workflow-options.ts';
 export type { RunOptions } from './core/types/run-options.ts';
