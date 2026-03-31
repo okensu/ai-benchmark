@@ -116,17 +116,7 @@ export class DefaultWorkflow implements Workflow {
     const failedTests: Array<Test> = [];
 
     for (const test of tests) {
-      let testResult: TestResult | null = null;
-
-      if (test instanceof AgenticTest) {
-        testResult = await this.runAgenticTest(task, test, artifactsPath);
-      } else if (test instanceof DeterministicTest) {
-        testResult = await this.runDeterministicTest(task, test, artifactsPath);
-      }
-
-      if (!testResult) {
-        throw new Error('No test result!');
-      }
+      const testResult = await this.runTest(task, test, artifactsPath);
 
       if (testResult.status === 'failed') {
         console.log('Test failed', test);
@@ -140,6 +130,22 @@ export class DefaultWorkflow implements Workflow {
     }
 
     return failedTests;
+  }
+
+  private async runTest(task: Task, test: Test, artifactsPath: string): Promise<TestResult> {
+    let testResult: TestResult | null = null;
+
+    if (test instanceof AgenticTest) {
+      testResult = await this.runAgenticTest(task, test, artifactsPath);
+    } else if (test instanceof DeterministicTest) {
+      testResult = await this.runDeterministicTest(task, test, artifactsPath);
+    }
+
+    if (!testResult) {
+      throw new Error('No test result!');
+    }
+
+    return testResult;
   }
 
   private async runAgenticTest(task: Task, test: AgenticTest, artifactsPath: string): Promise<TestResult> {
