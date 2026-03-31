@@ -57,25 +57,17 @@ export class ImplementFibonacciGeneratorTask implements Task {
     return expectedValues.map((expectedValue, n) => new DeterministicTest({
       name: `fib(${n}) should return ${expectedValue}`,
       run: async (importModule): Promise<TestResult> => {
-        // TODO: move try-catch outside the test
-        try {
-          const { fib } = await importModule('./fibonacci.ts');
-          const returnedValue = fib(n);
+        const { fib } = await importModule('./fibonacci.ts');
+        const returnedValue = fib(n);
 
-          if (returnedValue === expectedValue) {
-            return new TestResult({
-              status: 'passed'
-            });
-          } else {
-            return new TestResult({
-              status: 'failed',
-              reason: `fib(${n}) returned ${returnedValue}`
-            });
-          }
-        } catch (error) {
+        if (returnedValue === expectedValue) {
+          return new TestResult({
+            status: 'passed'
+          });
+        } else {
           return new TestResult({
             status: 'failed',
-            reason: 'Error was thrown during test execution'
+            reason: `fib(${n}) returned ${returnedValue}`
           });
         }
       }
