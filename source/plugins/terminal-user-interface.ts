@@ -109,13 +109,12 @@ export class TerminalUserInterfacePlugin implements Plugin {
       }
     });
 
-    modelRow.append(modelElement);
-    taskRow.append(taskElement);
-    statusRow.append(statusElement);
-
     content.append(modelRow);
+      modelRow.append(modelElement);
     content.append(taskRow);
+      taskRow.append(taskElement);
     content.append(statusRow);
+      statusRow.append(statusElement);
     content.append(spacer1);
     content.append(testsElement);
 
