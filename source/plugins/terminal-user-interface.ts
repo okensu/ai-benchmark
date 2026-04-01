@@ -44,15 +44,14 @@ export class TerminalUserInterfacePlugin implements Plugin {
       }
     });
 
-    const modelWrapper = blessed.box({
+    const modelRow = blessed.box({
+      hidden: true,
       width: '100%',
       height: 1
     });
 
     const modelElement = blessed.text({
-      hidden: true,
       tags: true,
-      content: '',
       padding: {
         left: 1,
         right: 1
@@ -62,14 +61,14 @@ export class TerminalUserInterfacePlugin implements Plugin {
       }
     });
 
-    const taskWrapper = blessed.box({
+    const taskRow = blessed.box({
+      hidden: true,
       width: '100%',
       height: 1
     });
 
     const taskElement = blessed.text({
       tags: true,
-      content: '',
       padding: {
         left: 1,
         right: 1
@@ -79,16 +78,18 @@ export class TerminalUserInterfacePlugin implements Plugin {
       }
     });
 
-    const statusElement = blessed.text({
+    const statusRow = blessed.box({
       hidden: true,
-      tags: true,
       width: '100%',
-      height: 1,
+      height: 1
+    });
+
+    const statusElement = blessed.text({
+      tags: true,
       padding: {
         left: 1,
         right: 1
       },
-      content: '',
       style: {
         fg: 'cyan'
       }
@@ -102,19 +103,19 @@ export class TerminalUserInterfacePlugin implements Plugin {
     let testsElement = blessed.text({
       hidden: true,
       width: '100%',
-      height: 1,
       padding: {
         left: 1,
         right: 1
       }
     });
 
-    modelWrapper.append(modelElement);
-    taskWrapper.append(taskElement);
+    modelRow.append(modelElement);
+    taskRow.append(taskElement);
+    statusRow.append(statusElement);
 
-    content.append(modelWrapper);
-    content.append(taskWrapper);
-    content.append(statusElement);
+    content.append(modelRow);
+    content.append(taskRow);
+    content.append(statusRow);
     content.append(spacer1);
     content.append(testsElement);
 
@@ -130,7 +131,7 @@ export class TerminalUserInterfacePlugin implements Plugin {
       this.model = model;
       this.tasks = tasks;
 
-      modelElement.hidden = false;
+      modelRow.hidden = false;
       modelElement.setContent(` {bold}{#333333-fg}Model:{/#333333-fg}{/bold} ${model}`);
 
       this.screen!.render();
@@ -139,14 +140,14 @@ export class TerminalUserInterfacePlugin implements Plugin {
     emitter.on('task:started', ({ task }) => {
       this.task = task;
 
-      taskElement.hidden = false;
+      taskRow.hidden = false;
       taskElement.setContent(`  {bold}{#333333-fg}Task:{/#333333-fg}{/bold} ${task.name}`);
 
       this.screen!.render();
     });
 
     emitter.on('task:implementation:started', () => {
-      statusElement.hidden = false;
+      statusRow.hidden = false;
       statusElement.setContent('{bold}{#333333-fg}Status:{/#333333-fg}{/bold} Implementing initial solution');
 
       this.screen!.render();
