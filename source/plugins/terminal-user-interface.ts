@@ -44,25 +44,44 @@ export class TerminalUserInterfacePlugin implements Plugin {
       }
     });
 
-    const taskElement = blessed.text({
+    const modelWrapper = blessed.box({
+      width: '100%',
+      height: 1
+    });
+
+    const modelElement = blessed.text({
       hidden: true,
+      tags: true,
+      content: '',
       padding: {
         left: 1,
         right: 1
       },
       style: {
-        bg: 'blue',
-        fg: 'black'
+        fg: 'magenta'
       }
     });
 
-    const spacer1 = blessed.box({
+    const taskWrapper = blessed.box({
       width: '100%',
       height: 1
     });
 
+    const taskElement = blessed.text({
+      tags: true,
+      content: '',
+      padding: {
+        left: 1,
+        right: 1
+      },
+      style: {
+        fg: 'blue'
+      }
+    });
+
     const statusElement = blessed.text({
       hidden: true,
+      tags: true,
       width: '100%',
       height: 1,
       padding: {
@@ -75,7 +94,7 @@ export class TerminalUserInterfacePlugin implements Plugin {
       }
     });
 
-    const spacer2 = blessed.box({
+    const spacer1 = blessed.box({
       width: '100%',
       height: 1
     });
@@ -90,10 +109,13 @@ export class TerminalUserInterfacePlugin implements Plugin {
       }
     });
 
-    content.append(taskElement);
-    content.append(spacer1);
+    modelWrapper.append(modelElement);
+    taskWrapper.append(taskElement);
+
+    content.append(modelWrapper);
+    content.append(taskWrapper);
     content.append(statusElement);
-    content.append(spacer2);
+    content.append(spacer1);
     content.append(testsElement);
 
     this.screen.append(content);
@@ -107,32 +129,31 @@ export class TerminalUserInterfacePlugin implements Plugin {
     emitter.on('run:started', ({ model, tasks }) => {
       this.model = model;
       this.tasks = tasks;
+
+      modelElement.hidden = false;
+      modelElement.setContent(` {bold}{#333333-fg}Model:{/#333333-fg}{/bold} ${model}`);
+
+      this.screen!.render();
     });
 
     emitter.on('task:started', ({ task }) => {
       this.task = task;
 
       taskElement.hidden = false;
-      taskElement.setContent(task.name);
+      taskElement.setContent(`  {bold}{#333333-fg}Task:{/#333333-fg}{/bold} ${task.name}`);
 
       this.screen!.render();
     });
 
     emitter.on('task:implementation:started', () => {
       statusElement.hidden = false;
-      statusElement.setContent('Implementing initial solution...');
+      statusElement.setContent('{bold}{#333333-fg}Status:{/#333333-fg}{/bold} Implementing initial solution');
 
       this.screen!.render();
     });
 
     emitter.on('task:testing:running-tests', () => {
       this.testingIteration++;
-
-      statusElement.setContent(
-        (this.testingIteration === 1)
-          ? 'Testing...'
-          : 'Re-testing...'
-      );
 
       testsElement.detach();
 
@@ -167,7 +188,7 @@ export class TerminalUserInterfacePlugin implements Plugin {
     });
 
     emitter.on('task:testing:fixing', () => {
-      statusElement.setContent('Fixing issue...');
+      statusElement.setContent('{bold}{#333333-fg}Status:{/#333333-fg}{/bold} Fixing issue');
       this.screen!.render();
     });
 
@@ -175,7 +196,7 @@ export class TerminalUserInterfacePlugin implements Plugin {
       const testElement = this.testToTextElementMap.get(test);
 
       if (testElement) {
-        statusElement.setContent(`Testing '${test.name}'...`)
+        statusElement.setContent(`{bold}{#333333-fg}Status:{/#333333-fg}{/bold} Testing '${test.name}'`)
 
         testElement.style.fg = 'yellow';
         testElement.setContent('󰜋');
@@ -204,7 +225,7 @@ export class TerminalUserInterfacePlugin implements Plugin {
     });
 
     emitter.on('run:finished', () => {
-      statusElement.setContent('Done');
+      statusElement.setContent('{bold}{#333333-fg}Status:{/#333333-fg}{/bold} Done');
       testsElement.detach();
 
       this.screen!.render();
