@@ -16,6 +16,45 @@ export class ImplementFibonacciGeneratorTask implements Task {
     this.subtasks = [];
     this.tests = [
       ...this.shouldReturnCorrectValuesTests(),
+      new DeterministicTest({
+        name: 'should throw error for negative inputs',
+        run: async (importModule): Promise<TestResult> => {
+          const { fib } = await importModule('./fibonacci.ts');
+
+          try {
+            const returnedValue = fib(-1);
+
+            return new TestResult({
+              status: 'failed',
+              reason: `fib(-1) returned ${returnedValue}`
+            });
+          } catch {
+            return new TestResult({
+              status: 'passed'
+            });
+          }
+        }
+      }),
+      new DeterministicTest({
+        name: 'should throw error for decimal inputs',
+        run: async (importModule): Promise<TestResult> => {
+          const { fib } = await importModule('./fibonacci.ts');
+
+          try {
+            const returnedValue = fib(2.5);
+
+            return new TestResult({
+              status: 'failed',
+              reason: `fib(2.5) returned ${returnedValue}`
+            });
+          } catch {
+            return new TestResult({
+              status: 'passed'
+            });
+          }
+        }
+      }),
+
       new AgenticTest({
         name: 'should be self-documented (zero comments)',
         instructions: 'Validate that result is self-documented and doesn\'t have any comments'
