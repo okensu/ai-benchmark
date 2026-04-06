@@ -54,7 +54,6 @@ export class ImplementFibonacciGeneratorTask implements Task {
           }
         }
       }),
-
       new AgenticTest({
         name: 'should be self-documented (zero comments)',
         instructions: 'Validate that result is self-documented and doesn\'t have any comments'
